@@ -1,5 +1,16 @@
 from pico2d import load_image
 
+
+class Idle:
+    pass
+class Run:
+#    @staticmethod
+    pass
+class Sleep:
+    pass
+
+
+
 class Ball:
     def __init__(self, x = 400, y = 300, velocity = 1):
         self.image = load_image('ball21x21.png')
