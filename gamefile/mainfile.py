@@ -28,13 +28,14 @@ def reset_world():
     global boy
 
     running = True
-
+    sky = Sky()
+    game_world.add_object(sky)
     background = Background()
     game_world.add_object(background)
-    post_bar = GoalPost()
-    game_world.add_object(post_bar)
     grass = Grass()
     game_world.add_object(grass)
+    post_bar = GoalPost()
+    game_world.add_object(post_bar)
     boy = Boy()
     game_world.add_object(boy)
     ball =Ball()
