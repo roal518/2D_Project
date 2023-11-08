@@ -25,11 +25,9 @@ def reset_world():
     global running
     global grass
     global team
-    global boy
+    global boy;
 
     running = True
-    sky = Sky()
-    game_world.add_object(sky)
     background = Background()
     game_world.add_object(background)
     grass = Grass()
@@ -54,7 +52,7 @@ def render_world():
     update_canvas()
 
 
-open_canvas()
+open_canvas(1200,600)
 reset_world()
 # game loop
 while running:
