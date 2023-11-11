@@ -28,8 +28,8 @@ def jump_to_idle(e):
     return e[0] == 'NO_DOWN'
 
 # time_out = lambda e : e[0] == 'TIME_OUT'
-
-
+CEILING = 300
+FLOOR = 90
 
 
 # Boy Run Speed
@@ -38,7 +38,7 @@ RUN_SPEED_KMPH = 20.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-GRAVITY = 4.8
+GRAVITY = 5.8
 # Boy Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -83,16 +83,16 @@ class Idle:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         if boy.fly == 1:
             if not boy.is_jump:
-                if boy.y <= 220:
+                if boy.y <= CEILING:
                     boy.y += GRAVITY*RUN_SPEED_PPS * game_framework.frame_time
                 else:
                     boy.is_jump=True
             elif  boy.is_jump:
                 boy.y -= GRAVITY*RUN_SPEED_PPS * game_framework.frame_time
-                if boy.y <= boy.ground:
+                if boy.y <= FLOOR:
                     boy.fly = 0
                     boy.is_jump = False
-                    boy.y = 90
+                    boy.y = FLOOR
     @staticmethod
     def draw(boy):
         boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
@@ -120,16 +120,16 @@ class Run:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         if boy.fly == 1:
             if not boy.is_jump:
-                if boy.y <= 220:
+                if boy.y <= CEILING:
                     boy.y += GRAVITY*RUN_SPEED_PPS * game_framework.frame_time
                 else:
                     boy.is_jump=True
             elif  boy.is_jump:
                 boy.y -= GRAVITY*RUN_SPEED_PPS * game_framework.frame_time
-                if boy.y <= boy.ground:
+                if boy.y <= FLOOR:
                     boy.fly = 0
                     boy.is_jump = False
-                    boy.y = 90
+                    boy.y = FLOOR
     @staticmethod
     def draw(boy):
         boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
@@ -176,7 +176,6 @@ class Boy:
         self.face_dir = 1
         self.dir = 0
         self.fly = 0
-        self.ground = 90
         self.is_jump = False
         self.image = load_image('animation_sheet.png')
         self.state_machine = StateMachine(self)
@@ -192,7 +191,7 @@ class Boy:
     # fill here
     def get_bb(self):
         # return self.x - a, self.y - b, self.x + c, self.y + d
-        return self.x - 20, self.y - 50, self.x + 20, self.y + 50
+        return self.x - 20, self.y - 45, self.x + 20, self.y + 45
 
     def handle_collision(self, group, other):
         pass

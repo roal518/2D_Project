@@ -34,7 +34,7 @@ def init():
 
     # fill here
     global balls
-    balls = [Ball(random.randint(0,1600),60,0) for _ in range(50)]
+    balls = [Ball(random.randint(600,800),300,4) for _ in range(5)]
     game_world.add_objects(balls, 1)
 
     game_world.add_collision_pair('boy.ball', boy, None) #소년을 등록
@@ -48,6 +48,7 @@ def finish():
 
 def update():
     game_world.update()
+    game_world.handle_collision()
 
 
 def draw():
