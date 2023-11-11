@@ -10,21 +10,12 @@ class Grass:
 
     def update(self):
         pass
-class Sky:
-    def __init__(self):
-        self.image = load_image('sky.png')
-
-    def draw(self):
-        self.image.draw(400, 500,1600,600)
-
-    def update(self):
-        pass
 class Background:
     def __init__(self):
         self.image = load_image('background.png')
 
     def draw(self):
-        self.image.draw(400, 170)
+        self.image.draw(600, 380)
 
     def update(self):
         pass
