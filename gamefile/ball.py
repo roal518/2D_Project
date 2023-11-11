@@ -4,7 +4,6 @@ from pico2d import load_image
 class Idle:
     pass
 class Run:
-#    @staticmethod
     pass
 class Sleep:
     pass
