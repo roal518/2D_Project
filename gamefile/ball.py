@@ -1,25 +1,30 @@
-from pico2d import load_image
+from pico2d import *
+import game_world
+import game_framework
 
-
-class Idle:
-    pass
-class Run:
-    pass
-# 공은 매개변수가 1이 되면 멈춰야 한다 IDLE
-# 충돌하면 이동하는 식이 변경되고 매개변수도 0이 된다. RUN - RUN
-# 클래스 너무 어렵다
-# 스테이트 머신 ?
-# 필드 밖으로 충돌하면 식 변경
-# 매개변수는 2차를 쓰도록 하자 점에 대해서 이동하게 하면 된다. 식은 이미 갖고 있음
-# 
 class Ball:
+    image = None
+
     def __init__(self, x = 400, y = 300, velocity = 1):
-        self.image = load_image('ball21x21.png')
+        if Ball.image == None:
+            Ball.image = load_image('ball21x21.png')
         self.x, self.y, self.velocity = x, y, velocity
 
     def draw(self):
         self.image.draw(self.x, self.y)
-
+        draw_rectangle(*self.get_bb())
     def update(self):
-        self.x += self.velocity
-        self.y += self.velocity
+        self.x += self.velocity * 100 * game_framework.frame_time
+        if self.x < 25 or self.x > 1600 - 25:
+            game_world.remove_object(self)
+
+    # fill here
+    def get_bb(self):
+        return self.x - 10, self.y - 10, self.x+10,self.y+10
+
+    def handle_collision(self, group, other):
+        if group == 'boy:ball':
+            game_world.remove_object(self)
+
+        if group == 'fireball:zombie':
+            game_world.remove_object(self)
