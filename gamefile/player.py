@@ -1,7 +1,6 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 
-from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
-    draw_rectangle
+from pico2d import *
 from ball import Ball
 import game_framework
 import game_world
@@ -29,20 +28,21 @@ def jump_to_idle(e):
 
 # time_out = lambda e : e[0] == 'TIME_OUT'
 CEILING = 300
-FLOOR = 90
+FLOOR = 110
 
 
 # Boy Run Speed
-PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+PIXEL_PER_METER = (20.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 20.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-GRAVITY = 5.8
+GRAVITY = 3.8
 # Boy Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 8
+FRAMES_PER_RUN_ACTION = 4
+FRAMES_PER_IDLE_ACTION = 6
 class Jump:
     @staticmethod
     def enter (boy,e):
@@ -57,9 +57,7 @@ class Jump:
                boy.state_machine.handle_event(('NO_DOWN', 0))
         elif boy.action == 0 or boy.action == 1:
                boy.state_machine.handle_event(('DOWN', 0))
-    @staticmethod
-    def draw(boy):
-         boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+
 
 class Idle:
 
@@ -80,7 +78,7 @@ class Idle:
 
     @staticmethod
     def do(boy):
-        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        boy.idle_frame = (boy.idle_frame + FRAMES_PER_IDLE_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         if boy.fly == 1:
             if not boy.is_jump:
                 if boy.y <= CEILING:
@@ -95,8 +93,12 @@ class Idle:
                     boy.y = FLOOR
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
-        draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+        if boy.face_dir==1:
+            boy.idle_image.clip_draw(int(boy.idle_frame) * 48, 0, 48, 48, boy.x, boy.y,100,100)
+            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+        else:
+            boy.idle_image.clip_composite_draw(int(boy.idle_frame) * 48, 0, 48, 48, 270,'h',boy.x, boy.y,100,100)
+            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
 
 
 class Run:
@@ -117,7 +119,7 @@ class Run:
         # boy.frame = (boy.frame + 1) % 8
         boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600-25)
-        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        boy.run_frame = (boy.run_frame + FRAMES_PER_RUN_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
         if boy.fly == 1:
             if not boy.is_jump:
                 if boy.y <= CEILING:
@@ -132,8 +134,13 @@ class Run:
                     boy.y = FLOOR
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
-        draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+        if boy.face_dir==1:
+            boy.run_image.clip_draw(int(boy.run_frame) * 48, 0, 48, 48, boy.x, boy.y,100,100)
+            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+        else:
+            boy.run_image.clip_composite_draw(int(boy.run_frame) * 48, 0, 48, 48, 270 ,'h',boy.x, boy.y,100,100)
+            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+
 
 class StateMachine:
     def __init__(self, boy):
@@ -170,14 +177,16 @@ class StateMachine:
 
 class Boy:
     def __init__(self):
-        self.x, self.y = 400, 90
-        self.frame = 0
+        self.x, self.y = 400, 110
+        self.run_frame = 0
+        self.idle_frame = 0
         self.action = 3
         self.face_dir = 1
         self.dir = 0
         self.fly = 0
         self.is_jump = False
-        self.image = load_image('animation_sheet.png')
+        self.idle_image = load_image('pngfile/Woodcutter_idle.png')
+        self.run_image = load_image('pngfile/Woodcutter_run.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
     def update(self):
@@ -191,7 +200,10 @@ class Boy:
     # fill here
     def get_bb(self):
         # return self.x - a, self.y - b, self.x + c, self.y + d
-        return self.x - 20, self.y - 45, self.x + 20, self.y + 45
+        if self.face_dir == 1:
+            return self.x - 40, self.y -55, self.x + 8, self.y + 25
+        elif self.face_dir == -1:
+            return self.x - 8, self.y - 55, self.x + 40, self.y + 25
 
     def handle_collision(self, group, other):
         pass

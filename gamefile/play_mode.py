@@ -37,9 +37,16 @@ def init():
     for ball in balls:
         game_world.add_collision_pair('boy:ball', boy, ball)
 
-    global goalpost
-    goalpost = GoalPost()
-    game_world.add_object(goalpost,1)
+    global goalpost_A
+    goalpost_A = GoalPost(20,120,0)
+    game_world.add_object(goalpost_A,1)
+
+    global goalpost_B
+    goalpost_B = GoalPost(1580,120,1)
+    game_world.add_object(goalpost_B,1)
+
+    background =Background()
+    game_world.add_object(background,0)
 
     grass = Grass()
     game_world.add_object(grass, 0)
