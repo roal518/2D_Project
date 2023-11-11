@@ -3,7 +3,7 @@ from pico2d import load_image
 
 class Grass:
     def __init__(self):
-        self.image = load_image('field.png')
+        self.image = load_image('pngfile//field.png')
 
     def draw(self):
         self.image.draw(400, 100,1600,200)
@@ -12,7 +12,7 @@ class Grass:
         pass
 class Background:
     def __init__(self):
-        self.image = load_image('background.png')
+        self.image = load_image('pngfile//background.png')
 
     def draw(self):
         self.image.draw(600, 380)
@@ -21,7 +21,7 @@ class Background:
         pass
 class GoalPost:
     def __init__(self):
-        self.image = load_image('goalpost.png')
+        self.image = load_image('pngfile//goalpost.png')
 
     def draw(self):
         self.image.draw(0,120,100,150)

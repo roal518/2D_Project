@@ -23,23 +23,29 @@ def handle_events():
 def init():
     global grass
     global boy
-
     running = True
-
-    grass = Grass()
-    game_world.add_object(grass, 0)
 
     boy = Boy()
     game_world.add_object(boy, 1)
 
     # fill here
     global balls
-    balls = [Ball(random.randint(600,800),300,4) for _ in range(5)]
+    balls = [Ball(random.randint(600,800),300,4) for _ in range(1)]
     game_world.add_objects(balls, 1)
 
     game_world.add_collision_pair('boy.ball', boy, None) #소년을 등록
     for ball in balls:
         game_world.add_collision_pair('boy:ball', boy, ball)
+
+    global goalpost
+    goalpost = GoalPost()
+    game_world.add_object(goalpost,1)
+
+    grass = Grass()
+    game_world.add_object(grass, 0)
+
+
+
 
 def finish():
     game_world.clear()
