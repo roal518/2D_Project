@@ -4,6 +4,7 @@ from pico2d import *
 import game_world
 import game_framework
 import math
+import player
 GROUND = 65
 CEILING = 600
 LEFT_WALL = 10
@@ -21,8 +22,9 @@ class Ball:
         self.x, self.y, self.x_velocity, self.y_velocity = x, y, velocity , velocity
         self.launch_angle = 90
         self.bounce_rate = 1
+        self.rotation = 0
     def draw(self):
-        self.image.draw(self.x, self.y)
+        self.image.rotate_draw(math.radians(self.rotation), self.x, self.y)
         draw_rectangle(*self.get_bb())
     def update(self):
         self.x += (self.x_velocity * 200
@@ -31,17 +33,21 @@ class Ball:
         self.y += (self.y_velocity * 200
                    * game_framework.frame_time
                    * math.sin(math.radians(self.launch_angle)))
+        self.rotation +=1
         self.x = clamp(LEFT_WALL, self.x, RIGHT_WALL)
         if self.x <= LEFT_WALL:
             self.x_velocity /= -1
         elif self.x >= RIGHT_WALL:
             self.x_velocity *= -1
+
         self.y = clamp(GROUND,self.y,CEILING)
         if self.y <= GROUND:
             self.y_velocity /= -1
             self.bounce_rate += 1
+
         elif self.y >= CEILING/self.bounce_rate:
             self.y_velocity *= -1
+
 
 
     # fill here
@@ -50,9 +56,15 @@ class Ball:
 
     def handle_collision(self, group, other):
         if group == 'boy:ball':
-            self.launch_angle = random.randint(0,90)
+            print(other.dir)
+            if other.dir == 1:
+                self.launch_angle = random.randint(0, 90)
+            elif other.dir == -1:
+                self.launch_angle = random.randint(90, 180)
+
             self.bounce_rate = 1
-            self.velocity = random.randint(1,5)
+            self.y_velocity = random.randint(1, 5)
+            self.x_velocity = random.randint(4, 6)
             pass
 # 공이 닿으면 player의 중심점과 공의 중심점이 연결되는
 # 선분과 x축이 만드는 각도를 구해서 launch_angle을 바꿔준다.
