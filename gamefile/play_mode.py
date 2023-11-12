@@ -5,9 +5,9 @@ import game_framework
 
 import game_world
 from field import *
-from player import *
+from player_1p import *
 from ball import Ball
-
+from player_2p import *
 # boy = None
 
 def handle_events():
@@ -18,12 +18,16 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         else:
+            ai.handle_event(event)
             boy.handle_event(event)
 
 def init():
     global grass
     global boy
+    global ai
     running = True
+    ai = Ai()
+    game_world.add_object(ai, 1)
 
     boy = Boy()
     game_world.add_object(boy, 1)
@@ -36,6 +40,9 @@ def init():
     game_world.add_collision_pair('boy.ball', boy, None) #소년을 등록
     for ball in balls:
         game_world.add_collision_pair('boy:ball', boy, ball)
+    game_world.add_collision_pair('boy.ball', ai, None)  # 소년을 등록
+    for ball in balls:
+        game_world.add_collision_pair('boy:ball', ai, ball)
 
     global goalpost_A
     goalpost_A = GoalPost(20,120,0)

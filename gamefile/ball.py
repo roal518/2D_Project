@@ -4,7 +4,7 @@ from pico2d import *
 import game_world
 import game_framework
 import numpy as np
-import player
+import player_1p
 GRAVITY = 2.8
 GROUND = 65
 CEILING = 600
@@ -61,11 +61,6 @@ class Ball:
                 self.launch_angle = random.randint(10, 80)
             elif other.x > self.x:
                 self.launch_angle = random.randint(100, 170)
-            delta_x = other.x-10-self.x
-            delta_y = other.y-40-self.y
-            angle_radians = math.atan2(delta_y,delta_x)
-            self.launch_angle = math.degrees(angle_radians+10)
-            print(math.degrees(angle_radians+10))
             self.bounce_rate = 1
             self.y_velocity = random.randint(6, 8)
             self.x_velocity = random.randint(5, 7)

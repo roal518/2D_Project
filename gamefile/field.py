@@ -39,6 +39,7 @@ class GoalPost:
             if other.y <= 200:
                 other.x = 500
                 other.y = 300
+                other.bounce_rate = 1
                 other.x_velocity,other.y_velocity = 4, 4
                 other.launch_angle = 90
                 print('goal')
@@ -48,6 +49,7 @@ class GoalPost:
             if other.y <= 200:
                 other.x = 1100
                 other.y = 300
+                other.bounce_rate = 1
                 other.x_velocity,other.y_velocity = 4, 4
                 other.launch_angle = 90
                 print('goal')
