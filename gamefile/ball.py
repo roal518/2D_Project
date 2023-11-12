@@ -9,7 +9,7 @@ GRAVITY = 2.8
 GROUND = 65
 CEILING = 600
 LEFT_WALL = 10
-RIGHT_WALL = 1600-10
+RIGHT_WALL = 1590
 class Run:
     pass
 class Move:
@@ -46,6 +46,10 @@ class Ball:
             self.bounce_rate += 1
         elif self.y >= CEILING / self.bounce_rate:
             self.y_velocity *= -1
+        if self.bounce_rate > 6:
+            self.x_velocity = 0
+            self.y_velocity = 0
+            self.rotation -= 1
 
             # fill here
     def get_bb(self):
@@ -57,10 +61,14 @@ class Ball:
                 self.launch_angle = random.randint(10, 80)
             elif other.x > self.x:
                 self.launch_angle = random.randint(100, 170)
-
+            delta_x = other.x-10-self.x
+            delta_y = other.y-40-self.y
+            angle_radians = math.atan2(delta_y,delta_x)
+            self.launch_angle = math.degrees(angle_radians+10)
+            print(math.degrees(angle_radians+10))
             self.bounce_rate = 1
-            self.y_velocity = random.randint(1, 5)
-            self.x_velocity = random.randint(5, 8)
+            self.y_velocity = random.randint(6, 8)
+            self.x_velocity = random.randint(5, 7)
             pass
 # 공이 닿으면 player의 중심점과 공의 중심점이 연결되는
 # 선분과 x축이 만드는 각도를 구해서 launch_angle을 바꿔준다.

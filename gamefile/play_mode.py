@@ -30,7 +30,7 @@ def init():
 
     # fill here
     global balls
-    balls = [Ball(random.randint(600,800),300,4) for _ in range(1)]
+    balls = [Ball(800,300,4) for _ in range(1)]
     game_world.add_objects(balls, 1)
 
     game_world.add_collision_pair('boy.ball', boy, None) #소년을 등록
@@ -40,10 +40,11 @@ def init():
     global goalpost_A
     goalpost_A = GoalPost(20,120,0)
     game_world.add_object(goalpost_A,1)
-
+    game_world.add_collision_pair('ball:post_a',ball,goalpost_A)
     global goalpost_B
     goalpost_B = GoalPost(1580,120,1)
     game_world.add_object(goalpost_B,1)
+    game_world.add_collision_pair('ball:post_b',ball,goalpost_B)
 
     background =Background()
     game_world.add_object(background,0)
