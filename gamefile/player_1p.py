@@ -20,7 +20,8 @@ def left_up(e):
 
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_UP
-
+def player_change(e):
+    return e[0] =='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RSHIFT
 def jump_to_run(e):
     return e[0] == 'DOWN'
 def jump_to_idle(e):
@@ -176,8 +177,9 @@ class StateMachine:
 
 
 class Boy:
-    def __init__(self):
-        self.x, self.y = 400, 110
+    def __init__(self,pilot,x):
+        self.pilot = pilot
+        self.x, self.y = x, 110
         self.run_frame = 0
         self.idle_frame = 0
         self.action = 3
