@@ -47,7 +47,7 @@ class GoalPost:
                 other.y = 300
                 other.bounce_rate = 1
                 other.x_velocity,other.y_velocity = 4, 4
-                other.launch_angle = 90
+                other.launch_angle = -90
             else:
                 other.x_velocity *=-1
         if group == 'ball:post_b':
@@ -56,7 +56,7 @@ class GoalPost:
                 other.y = 300
                 other.bounce_rate = 1
                 other.x_velocity,other.y_velocity = 4, 4
-                other.launch_angle = 90
+                other.launch_angle = -90
                 self.point_1p += 1
             else:
                 other.x_velocity *=-1
