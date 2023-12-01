@@ -28,7 +28,12 @@ def handle_events():
                 S_P2.pilot *= -1
                 S_P1.bet_P = 1
                 S_P2.bet_P = 1
-
+        if event.type == SDL_KEYDOWN and event.key == SDLK_RSHIFT:
+            if boy1.bet_P != boy2.bet_P:
+                boy1.pilot *= -1
+                boy2.pilot *= -1
+                boy1.bet_P = 1
+                boy2.bet_P = 1
 
 def init():
     global grass

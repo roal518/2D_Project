@@ -20,8 +20,10 @@ def left_up(e):
 
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_UP
-def player_change(e):
+def rshift_down(e):
     return e[0] =='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RSHIFT
+def rshift_up(e):
+    return e[0] == 'DONE'
 def jump_to_run(e):
     return e[0] == 'DOWN'
 def jump_to_idle(e):
@@ -38,12 +40,23 @@ RUN_SPEED_KMPH = 20.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-GRAVITY = 3.8
+GRAVITY = 2.8
 # Boy Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_RUN_ACTION = 4
 FRAMES_PER_IDLE_ACTION = 6
+class Change:
+    @staticmethod
+    def enter (boy,e):
+        boy.bet_P = 0
+        pass
+    @staticmethod
+    def exit (boy, e):
+        pass
+    @staticmethod
+    def do(boy):
+        boy.state_machine.handle_event(('DONE', 0))
 class Jump:
     @staticmethod
     def enter (boy,e):
@@ -98,7 +111,7 @@ class Idle:
             boy.idle_image.clip_draw(int(boy.idle_frame) * 48, 0, 48, 48, boy.x, boy.y,100,100)
             draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
         else:
-            boy.idle_image.clip_composite_draw(int(boy.idle_frame) * 48, 0, 48, 48, 270,'h',boy.x, boy.y,100,100)
+            boy.idle_image.clip_composite_draw(int(boy.idle_frame) * 48, 0, 48, 48, 0,'h',boy.x, boy.y,100,100)
             draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
 
 
@@ -148,9 +161,10 @@ class StateMachine:
         self.boy = boy
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump},
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump,rshift_down:Change},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
-            Jump:{jump_to_idle: Idle, jump_to_run: Run}
+            Jump:{jump_to_idle: Idle, jump_to_run: Run},
+            Change:{rshift_up:Idle}
         }
 
     def start(self):
@@ -179,6 +193,7 @@ class StateMachine:
 class Boy:
     def __init__(self,pilot,x):
         self.pilot = pilot
+        self.bet_P = 1
         self.x, self.y = x, 110
         self.run_frame = 0
         self.idle_frame = 0
@@ -195,7 +210,8 @@ class Boy:
         self.state_machine.update()
 
     def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
+        if self.pilot == 1:
+            self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
         self.state_machine.draw()

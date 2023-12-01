@@ -1,7 +1,6 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 
 from pico2d import *
-from ball import Ball
 import random
 import math
 import game_framework
@@ -28,39 +27,38 @@ FRAMES_PER_RUN_ACTION = 4
 FRAMES_PER_IDLE_ACTION = 6
 
 class Ai:
-    images = None
-
-    def load_images(self):
-        if Ai.images == None:
-            Ai.images = load_image('pngfile/SteamMan_run.png')
-
     def __init__(self, x):
         self.x = x
         self.y = 110
-        self.load_images()
-        self.dir = 0.0  # radian 값으로 방향을 표시
+        self.run_images = load_image('pngfile/SteamMan_run.png')
+        self.idle_images = load_image('pngfile/SteamMan_idle.png')
+        self.dir = 90.0  # radian 값으로 방향을 표시
         self.speed = 0.0
         self.frame = random.randint(0, 9)
-        self.state = 'Idle'
-        self.ball_count = 0
-
+        self.state = 0
+        self.face_dir = -1
         self.tx, self.ty = 0, 0
-
-        self.patrol_locations = [(43, 274), (1118, 274), (1050, 494), (575, 804), (235, 991), (575, 804), (1050, 494),
-                                 (1118, 274)]
-        self.loc_no = 0
-
     def get_bb(self):
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        if self.face_dir == -1:
+            return self.x - 8, self.y - 55, self.x + 40, self.y + 25
+        elif self.face_dir == 1:
+            return self.x - 40, self.y - 55, self.x + 8, self.y + 25
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_RUN_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_RUN_ACTION
 
     def draw(self):
-        if math.cos(self.dir) < 0:
-           Ai.images.composite_draw(0, 'h', self.x, self.y, 100, 100)
+        if math.cos(self.dir) > 0:
+            if self.state == 1:
+                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 270,'h',self.x, self.y,100,100)
+            else:
+                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 270,'h',self.x, self.y,100,100)
         else:
-            Ai.images.draw(self.x, self.y, 100, 100)
+            if self.state == 1:
+                self.run_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y,100,100)
+            else:
+                self.idle_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y, 100, 100)
+
         # draw target location
         draw_rectangle(*self.get_bb())
 
@@ -68,7 +66,19 @@ class Ai:
         pass
 
     def handle_collision(self, group, other):
-        if group == 'boy:ball':
-            self.ball_count += 1
-
+        pass
+    def set_target_location(self,x=None,y=None):
+        if not x or not y:
+            raise ValueError('Location should be given')
+        self.tx, self.ty = x, y
+        return BehaviorTree.SUCCESS
+    def move_to(self, r=0.5):
+        self.state = 1
+        self.move_slightly_to(self.tx, self.ty)
+        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+    def build_behavior_tree(self):
+        pass
 

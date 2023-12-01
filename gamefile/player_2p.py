@@ -22,8 +22,6 @@ def lshift_down(e):
     return e[0] =='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LSHIFT
 def lshift_up(e):
     return e[0] == 'DONE'
-def lshift_new(e):
-    return e[0] == 'DONE_1P'
 def jump_to_run(e):
     return e[0] == 'DOWN'
 def jump_to_idle(e):
