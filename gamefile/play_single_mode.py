@@ -20,14 +20,12 @@ def handle_events():
         else:
             boy1.handle_event(event)
             boy2.handle_event(event)
-            S_P2.handle_event(event)
-            S_P1.handle_event(event)
-        if event.type == SDL_KEYDOWN and event.key == SDLK_LSHIFT:
-            if boy1.bet_P != boy1.bet_P:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_RSHIFT:
+            if boy1.bet_P != boy2.bet_P:
                 boy1.pilot *= -1
-                boy1.pilot *= -1
+                boy2.pilot *= -1
                 boy1.bet_P = 1
-                boy1.bet_P = 1
+                boy2.bet_P = 1
 
 
 def init():

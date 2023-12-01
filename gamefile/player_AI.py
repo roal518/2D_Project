@@ -79,6 +79,15 @@ class Ai:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
+    def move_to_ball(self):
+        self.state = 'Walk'
+        self.move_slightly_to(play_single_mode.balls.x)
+        if self.distance_less_than(play_single_mode.boy.x, play_single_mode.boy.y, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
     def build_behavior_tree(self):
-        pass
-
+        a1 = Action('Set target location',self.set_target_location,self.x,self.y)
+        a2 = Action('Move to',self.move_to)
+        root = SEQ_move_to_target_location = Sequence('Move to target location',a1,a2)
+        a3 = Action('Access to',self.move_to_ball)
