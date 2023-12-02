@@ -7,6 +7,7 @@ import game_framework
 import play_single_mode
 import game_world
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+import server
 # state event check`
 # ( state event type, event value )
 # time_out = lambda e : e[0] == 'TIME_OUT'
@@ -50,20 +51,21 @@ class Ai:
         self.frame = (self.frame + FRAMES_PER_RUN_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_RUN_ACTION
         self.bt.run()
     def draw(self):
+        sx, sy = self.x - server.background.window_left, self.y
         if math.cos(self.dir) > 0:
             self.face_dir = 1
             if self.state == 1:
-                self.run_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y, 100, 100)
+                self.run_images.clip_draw(int(self.frame) * 48, 0, 48, 48, sx, sy, 100, 100)
             else:
-                self.idle_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y, 100, 100)
+                self.idle_images.clip_draw(int(self.frame) * 48, 0, 48, 48, sx, sy, 100, 100)
         else:
             self.face_dir = -1
             if self.state == 1:
-                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 0, 'h', self.x, self.y, 100, 100)
+                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 0, 'h', sx, sy, 100, 100)
             else:
-                self.idle_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 0, 'h', self.x, self.y, 100, 100)
+                self.idle_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 0, 'h', sx, sy, 100, 100)
         # draw target location
-        draw_rectangle(*self.get_bb())
+
 
     def handle_event(self, event):
         pass
@@ -73,7 +75,7 @@ class Ai:
     def set_target_location(self,x=None,y=None):
         if not x or not y:
             raise ValueError('Location should be given')
-        self.tx, self.ty = play_single_mode.balls.x, play_single_mode.balls.y
+        self.tx, self.ty = play_single_mode.server.balls.x, play_single_mode.server.balls.y
         return BehaviorTree.SUCCESS
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty -self.y , tx-self.x)
@@ -97,7 +99,7 @@ class Ai:
         return distance2 < (PIXEL_PER_METER * r) ** 2
     def move_to(self, r=0.5):
         self.state = 1
-        self.move_slightly_to(play_single_mode.balls.x, play_single_mode.balls.y)
+        self.move_slightly_to(play_single_mode.server.balls.x, play_single_mode.server.balls.y)
         if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:

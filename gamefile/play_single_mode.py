@@ -45,11 +45,17 @@ def handle_R_shift_key():
 
 
 def init():
-    global grass
     global boy1,boy2
     global S_P1,S_P2
     global S_Players
     running = True
+
+    global balls
+    server.balls = Ball(800,300,4)
+    game_world.add_object(server.balls, 1)
+    server.background = Grass()
+    game_world.add_object(server.background, 0)
+
     S_P1 = Ai(1200, 0)
     game_world.add_object(S_P1, 1)
     S_P2 = Ai(1100,1)
@@ -60,29 +66,24 @@ def init():
     game_world.add_object(boy2, 1)
 
     # fill here
-    global balls
-    balls = Ball(800,300,4)
-    game_world.add_object(balls, 1)
 
     game_world.add_collision_pair('boy.ball', boy1, None)
-    game_world.add_collision_pair('boy:ball', boy1, balls)
+    game_world.add_collision_pair('boy:ball', boy1, server.balls)
     game_world.add_collision_pair('boy.ball', boy2, None)
-    game_world.add_collision_pair('boy:ball', boy2, balls)
+    game_world.add_collision_pair('boy:ball', boy2, server.balls)
     game_world.add_collision_pair('boy.ball', S_P1, None)
-    game_world.add_collision_pair('boy:ball', S_P1, balls)
+    game_world.add_collision_pair('boy:ball', S_P1, server.balls)
     game_world.add_collision_pair('boy.ball', S_P2, None)
-    game_world.add_collision_pair('boy:ball', S_P2, balls)
+    game_world.add_collision_pair('boy:ball', S_P2, server.balls)
 
     global goalpost_A
     goalpost_A = GoalPost(20,120,0)
     game_world.add_object(goalpost_A,1)
-    game_world.add_collision_pair('ball:post_a',balls,goalpost_A)
+    game_world.add_collision_pair('ball:post_a',server.balls,goalpost_A)
     global goalpost_B
     goalpost_B = GoalPost(1580,120,1)
     game_world.add_object(goalpost_B,1)
-    game_world.add_collision_pair('ball:post_b',balls,goalpost_B)
-    grass = Grass()
-    game_world.add_object(grass, 0)
+    game_world.add_collision_pair('ball:post_b',server.balls,goalpost_B)
 
 
 

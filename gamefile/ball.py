@@ -5,6 +5,7 @@ import game_world
 import game_framework
 import numpy as np
 import player_1p
+import server
 GRAVITY = 2.8
 GROUND = 45
 CEILING = 600
@@ -27,19 +28,24 @@ class Ball:
         self.bounce_rate = 1
 
     def draw(self):
-        self.image.rotate_draw(math.radians(self.rotation), self.x, self.y)
-        draw_rectangle(*self.get_bb())
+        sx = self.x - server.background.window_left
+        sy = self.y
+        self.image.rotate_draw(math.radians(self.rotation), sx, sy)
+        x1, y1, x2, y2 = self.get_bb()
+        draw_rectangle(x1 - server.background.window_left, y1 ,
+                       x2 - server.background.window_left, y2)
+
     def update(self):  #
         self.rotation += 1
-        self.x += (self.x_velocity * 200
+        self.x += (self.x_velocity * 150
                    * game_framework.frame_time
                    * math.cos(math.radians(self.launch_angle)))
-        self.y += (self.y_velocity * 200
+        self.y += (self.y_velocity * 150
                    * game_framework.frame_time
                    * math.sin(math.radians(self.launch_angle))
-                   - 0.5 * GRAVITY*(200 * game_framework.frame_time)**2)
+                   - 0.5 * GRAVITY*(150 * game_framework.frame_time)**2)
 
-        self.x = clamp(LEFT_WALL, self.x, RIGHT_WALL)
+        self.x = clamp(LEFT_WALL, self.x ,RIGHT_WALL)
         if self.x <= LEFT_WALL:
             self.x_velocity = -abs(self.x_velocity)
         elif self.x >= RIGHT_WALL:
@@ -63,13 +69,11 @@ class Ball:
 
     def handle_collision(self, group, other):
         if group == 'boy:ball':
-            if other.x <= self.x:
+            if other.x - server.background.window_left <= self.x:
                 self.launch_angle = random.randint(10, 80)
-            elif other.x > self.x:
+            elif other.x - server.background.window_left > self.x:
                 self.launch_angle = random.randint(100, 170)
             self.bounce_rate = 1
             self.y_velocity = random.randint(6, 8)
             self.x_velocity = random.randint(5, 7)
-# 공이 닿으면 player의 중심점과 공의 중심점이 연결되는
-# 선분과 x축이 만드는 각도를 구해서 launch_angle을 바꿔준다.
-#
+

@@ -4,7 +4,9 @@ from pico2d import *
 from ball import Ball
 import game_framework
 import game_world
+import server
 # state event check
+
 # ( state event type, event value )
 
 def right_down(e):
@@ -102,12 +104,14 @@ class Idle:
                     boy.y = FLOOR
     @staticmethod
     def draw(boy):
+        sx = boy.x - server.background.window_left
+        sy = boy.y
         if boy.face_dir==1:
-            boy.idle_image.clip_draw(int(boy.idle_frame) * 48, 0, 48, 48, boy.x, boy.y,100,100)
-            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+            boy.idle_image.clip_draw(int(boy.idle_frame) * 48, 0, 48, 48,sx, sy,100,100)
+
         else:
-            boy.idle_image.clip_composite_draw(int(boy.idle_frame) * 48, 0, 48, 48, 0,'h',boy.x, boy.y,100,100)
-            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+            boy.idle_image.clip_composite_draw(int(boy.idle_frame) * 48, 0, 48, 48, 0,'h', sx, sy,100,100)
+
 class Run:
     @staticmethod
     def enter(boy, e):
@@ -141,12 +145,14 @@ class Run:
                     boy.y = FLOOR
     @staticmethod
     def draw(boy):
+        sx = boy.x - server.background.window_left
+        sy = boy.y
         if boy.face_dir==1:
-            boy.run_image.clip_draw(int(boy.run_frame) * 48, 0, 48, 48, boy.x, boy.y,100,100)
-            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+            boy.run_image.clip_draw(int(boy.run_frame) * 48, 0, 48, 48,sx, sy,100,100)
+
         else:
-            boy.run_image.clip_composite_draw(int(boy.run_frame) * 48, 0, 48, 48, 270 ,'h',boy.x, boy.y,100,100)
-            draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
+            boy.run_image.clip_composite_draw(int(boy.run_frame) * 48, 0, 48, 48, 270 ,'h', sx, sy,100,100)
+
 class StateMachine:
     def __init__(self, boy):
         self.boy = boy
