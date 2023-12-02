@@ -10,24 +10,23 @@ import game_world
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
-
 def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
 def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
-
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_UP
 def rshift_down(e):
     return e[0] =='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RSHIFT
-def rshift_up(e):
-    return e[0] == 'DONE'
 def jump_to_run(e):
     return e[0] == 'DOWN'
 def jump_to_idle(e):
     return e[0] == 'NO_DOWN'
+def to_idle(e):
+    return e[0] == 'STILL_IDLE'
+
 
 # time_out = lambda e : e[0] == 'TIME_OUT'
 CEILING = 300
@@ -49,14 +48,13 @@ FRAMES_PER_IDLE_ACTION = 6
 class Change:
     @staticmethod
     def enter (boy,e):
-        boy.bet_P = 0
         pass
     @staticmethod
     def exit (boy, e):
-        pass
+        boy.bet_P = 0
     @staticmethod
     def do(boy):
-        boy.state_machine.handle_event(('DONE', 0))
+        boy.state_machine.handle_event(('STILL_IDLE', 0))
 class Jump:
     @staticmethod
     def enter (boy,e):
@@ -71,10 +69,7 @@ class Jump:
                boy.state_machine.handle_event(('NO_DOWN', 0))
         elif boy.action == 0 or boy.action == 1:
                boy.state_machine.handle_event(('DOWN', 0))
-
-
 class Idle:
-
     @staticmethod
     def enter(boy, e):
         if boy.face_dir == -1:
@@ -88,6 +83,7 @@ class Idle:
 
     @staticmethod
     def exit(boy, e):
+        boy.before_state = 0
         pass
 
     @staticmethod
@@ -99,7 +95,7 @@ class Idle:
                     boy.y += GRAVITY*RUN_SPEED_PPS * game_framework.frame_time
                 else:
                     boy.is_jump=True
-            elif  boy.is_jump:
+            elif boy.is_jump:
                 boy.y -= GRAVITY*RUN_SPEED_PPS * game_framework.frame_time
                 if boy.y <= FLOOR:
                     boy.fly = 0
@@ -113,10 +109,7 @@ class Idle:
         else:
             boy.idle_image.clip_composite_draw(int(boy.idle_frame) * 48, 0, 48, 48, 0,'h',boy.x, boy.y,100,100)
             draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
-
-
 class Run:
-
     @staticmethod
     def enter(boy, e):
         if right_down(e) or left_up(e): # 오른쪽으로 RUN
@@ -126,6 +119,7 @@ class Run:
 
     @staticmethod
     def exit(boy, e):
+        boy.before_state = 1
         pass
 
     @staticmethod
@@ -154,17 +148,15 @@ class Run:
         else:
             boy.run_image.clip_composite_draw(int(boy.run_frame) * 48, 0, 48, 48, 270 ,'h',boy.x, boy.y,100,100)
             draw_rectangle(*boy.get_bb())  # 튜플을 풀어헤쳐서 인자로 전달한다.
-
-
 class StateMachine:
     def __init__(self, boy):
         self.boy = boy
         self.cur_state = Idle
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Jump,rshift_down:Change},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump},
+            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Jump,rshift_down:Change},
             Jump:{jump_to_idle: Idle, jump_to_run: Run},
-            Change:{rshift_up:Idle}
+            Change:{to_idle:Idle}
         }
 
     def start(self):
@@ -185,11 +177,6 @@ class StateMachine:
 
     def draw(self):
         self.cur_state.draw(self.boy)
-
-
-
-
-
 class Boy:
     def __init__(self,pilot,x):
         self.pilot = pilot
@@ -206,13 +193,11 @@ class Boy:
         self.run_image = load_image('pngfile/Woodcutter_run.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+        self.before_state = 0
     def update(self):
         self.state_machine.update()
-
     def handle_event(self, event):
-        if self.pilot == 1:
-            self.state_machine.handle_event(('INPUT', event))
-
+        self.state_machine.handle_event(('INPUT', event))
     def draw(self):
         self.state_machine.draw()
     # fill here

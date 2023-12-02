@@ -1,0 +1,2 @@
+balls = None
+background = None

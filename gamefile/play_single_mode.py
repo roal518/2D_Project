@@ -18,14 +18,28 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         else:
-            boy1.handle_event(event)
-            boy2.handle_event(event)
+            if boy1.pilot == 1:
+                boy1.handle_event(event)
+            elif boy2.pilot == 1:
+                boy2.handle_event(event)
         if event.type == SDL_KEYDOWN and event.key == SDLK_RSHIFT:
-            if boy1.bet_P != boy2.bet_P:
+            if boy1.pilot == 1:
+                print("1")
+                boy1.bet_P = 0
                 boy1.pilot *= -1
                 boy2.pilot *= -1
-                boy1.bet_P = 1
-                boy2.bet_P = 1
+                boy2.state_machine.cur_state = Idle
+                print(boy1.state_machine.cur_state)
+                if boy1.before_state == 1:
+                    boy2.state_machine.cur_state = Run
+            if boy2.pilot == 1 and boy1.state_machine.cur_state == Idle:
+                print("3")
+                boy2.bet_P = 0
+                boy1.pilot *= -1
+                boy2.pilot *= -1
+                boy1.state_machine.cur_state = Idle
+                if boy2.before_state == 1:
+                    boy1.state_machine.cur_state = Run
 
 
 def init():
@@ -34,9 +48,9 @@ def init():
     global S_P1,S_P2
     global S_Players
     running = True
-    S_P1 = Ai(1200)
+    S_P1 = Ai(1200, 0)
     game_world.add_object(S_P1, 1)
-    S_P2 = Ai(1100)
+    S_P2 = Ai(1100,1)
     game_world.add_object(S_P2, 1)
     S_Players = [S_P1,S_P2]
     boy1 = Boy(1,400)
