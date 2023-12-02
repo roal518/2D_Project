@@ -6,7 +6,7 @@ import game_framework
 import numpy as np
 import player_1p
 GRAVITY = 2.8
-GROUND = 65
+GROUND = 45
 CEILING = 600
 LEFT_WALL = 10
 RIGHT_WALL = 1590

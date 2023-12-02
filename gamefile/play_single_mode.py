@@ -8,8 +8,8 @@ from field import *
 from player_1p import *
 from ball import Ball
 from player_AI import *
+import server
 # boy = None
-
 def handle_events():
     events = get_events()
     for event in events:
@@ -23,23 +23,25 @@ def handle_events():
             elif boy2.pilot == 1:
                 boy2.handle_event(event)
         if event.type == SDL_KEYDOWN and event.key == SDLK_RSHIFT:
-            if boy1.pilot == 1:
-                print("1")
-                boy1.bet_P = 0
-                boy1.pilot *= -1
-                boy2.pilot *= -1
-                boy2.state_machine.cur_state = Idle
-                print(boy1.state_machine.cur_state)
-                if boy1.before_state == 1:
-                    boy2.state_machine.cur_state = Run
-            if boy2.pilot == 1 and boy1.state_machine.cur_state == Idle:
-                print("3")
-                boy2.bet_P = 0
-                boy1.pilot *= -1
-                boy2.pilot *= -1
-                boy1.state_machine.cur_state = Idle
-                if boy2.before_state == 1:
-                    boy1.state_machine.cur_state = Run
+            handle_R_shift_key()
+
+
+def handle_R_shift_key():
+    if boy1.pilot == 1:
+        boy1.bet_P = 0
+        boy1.pilot *= -1
+        boy2.pilot *= -1
+        boy2.state_machine.cur_state = Idle
+        print(boy1.state_machine.cur_state)
+        if boy1.before_state == 1:
+            boy2.state_machine.cur_state = Run
+    if boy2.pilot == 1 and boy1.state_machine.cur_state == Idle:
+        boy2.bet_P = 0
+        boy1.pilot *= -1
+        boy2.pilot *= -1
+        boy1.state_machine.cur_state = Idle
+        if boy2.before_state == 1:
+            boy1.state_machine.cur_state = Run
 
 
 def init():
@@ -52,7 +54,6 @@ def init():
     game_world.add_object(S_P1, 1)
     S_P2 = Ai(1100,1)
     game_world.add_object(S_P2, 1)
-    S_Players = [S_P1,S_P2]
     boy1 = Boy(1,400)
     game_world.add_object(boy1, 1)
     boy2 = Boy( -1,500)
@@ -80,10 +81,6 @@ def init():
     goalpost_B = GoalPost(1580,120,1)
     game_world.add_object(goalpost_B,1)
     game_world.add_collision_pair('ball:post_b',balls,goalpost_B)
-
-    background =Background()
-    game_world.add_object(background,0)
-
     grass = Grass()
     game_world.add_object(grass, 0)
 
@@ -98,6 +95,7 @@ def finish():
 def update():
     game_world.update()
     game_world.handle_collision()
+
 
 
 def draw():

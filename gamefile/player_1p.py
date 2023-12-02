@@ -4,7 +4,6 @@ from pico2d import *
 from ball import Ball
 import game_framework
 import game_world
-
 # state event check
 # ( state event type, event value )
 
@@ -30,7 +29,7 @@ def to_idle(e):
 
 # time_out = lambda e : e[0] == 'TIME_OUT'
 CEILING = 300
-FLOOR = 110
+FLOOR = 90
 
 
 # Boy Run Speed
@@ -181,7 +180,7 @@ class Boy:
     def __init__(self,pilot,x):
         self.pilot = pilot
         self.bet_P = 1
-        self.x, self.y = x, 110
+        self.x, self.y = x, 90
         self.run_frame = 0
         self.idle_frame = 0
         self.action = 3
@@ -197,7 +196,8 @@ class Boy:
     def update(self):
         self.state_machine.update()
     def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
+        if self.pilot == 1:
+            self.state_machine.handle_event(('INPUT', event))
     def draw(self):
         self.state_machine.draw()
     # fill here

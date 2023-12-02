@@ -74,9 +74,6 @@ def init():
     game_world.add_object(goalpost_B,1)
     game_world.add_collision_pair('ball:post_b',balls,goalpost_B)
 
-    background =Background()
-    game_world.add_object(background,0)
-
     grass = Grass()
     game_world.add_object(grass, 0)
 

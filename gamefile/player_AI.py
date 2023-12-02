@@ -11,7 +11,7 @@ from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 # ( state event type, event value )
 # time_out = lambda e : e[0] == 'TIME_OUT'
 CEILING = 300
-FLOOR = 110
+FLOOR = 90
 
 # Boy Run Speed
 PIXEL_PER_METER = (20.0 / 0.3)  # 10 pixel 30 cm
@@ -30,7 +30,7 @@ class Ai:
     def __init__(self, x, job):
         self.job = job
         self.x = x
-        self.y = 110
+        self.y = 90
         self.run_images = load_image('pngfile/SteamMan_run.png')
         self.idle_images = load_image('pngfile/SteamMan_idle.png')
         self.dir = 90.0  # radian 값으로 방향을 표시
@@ -41,9 +41,9 @@ class Ai:
         self.tx, self.ty = 0, 0
         self.build_behavior_tree()
     def get_bb(self):
-        if self.face_dir == 1:
+        if self.face_dir == -1:
             return self.x - 8, self.y - 55, self.x + 40, self.y + 25
-        elif self.face_dir == -1:
+        elif self.face_dir == 1:
             return self.x - 40, self.y - 55, self.x + 8, self.y + 25
 
     def update(self):
@@ -51,16 +51,17 @@ class Ai:
         self.bt.run()
     def draw(self):
         if math.cos(self.dir) > 0:
+            self.face_dir = 1
             if self.state == 1:
-                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 270,'h',self.x, self.y,100,100)
-            else:
-                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 270,'h',self.x, self.y,100,100)
-        else:
-            if self.state == 1:
-                self.run_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y,100,100)
+                self.run_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y, 100, 100)
             else:
                 self.idle_images.clip_draw(int(self.frame) * 48, 0, 48, 48, self.x, self.y, 100, 100)
-
+        else:
+            self.face_dir = -1
+            if self.state == 1:
+                self.run_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 0, 'h', self.x, self.y, 100, 100)
+            else:
+                self.idle_images.clip_composite_draw(int(self.frame) * 48, 0, 48, 48, 0, 'h', self.x, self.y, 100, 100)
         # draw target location
         draw_rectangle(*self.get_bb())
 
@@ -80,8 +81,16 @@ class Ai:
         self.x += self.speed * math.cos(self.dir) * game_framework.frame_time
         if self.job == 1:
             self.x = clamp(900,self.x,1600)
+            if self.x < 910:
+                self.state = 0
+            else:
+                self.state = 1
         elif self.job == 0:
             self.x = clamp(90,self.x,1200)
+            if self.x > 1190:
+                self.state = 0
+            else:
+                self.state = 1
 
     def distance_less_than(self, x1, y1, x2, y2, r):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2

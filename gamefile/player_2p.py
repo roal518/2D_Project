@@ -28,7 +28,7 @@ def jump_to_idle(e):
     return e[0] == 'NO_DOWN'
 # time_out = lambda e : e[0] == 'TIME_OUT'
 CEILING = 300
-FLOOR = 110
+FLOOR = 90
 
 # Boy Run Speed
 PIXEL_PER_METER = (20.0 / 0.3)  # 10 pixel 30 cm
@@ -183,7 +183,7 @@ class Player_2P:
     def __init__(self,pilot,x):
         self.pilot = pilot
         self.bet_P = 1
-        self.x, self.y = x, 110
+        self.x, self.y = x, 90
         self.run_frame = 0
         self.idle_frame = 0
         self.action = 3
