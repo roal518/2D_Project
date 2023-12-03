@@ -30,7 +30,7 @@ class Grass:
         self.image = load_image('pngfile/background.png')
         self.font = load_font('ENCR10B.TTF', 32)
         self.min = 1
-        self.sec = 0
+        self.sec = 30
         self.timer = CountdownTimer(minutes= self.min,seconds=self.sec)
         self.timer.start()
         self.cw = get_canvas_width()
