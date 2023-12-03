@@ -26,14 +26,14 @@ class Ball:
         self.lastX,self.lastY = self.x,self.y
         self.launch_angle = -90
         self.bounce_rate = 1
+        self.bounce_sound = load_music('soundfile/bounce.mp3')
+        self.bounce_sound.set_volume(32)
 
     def draw(self):
         sx = self.x - server.background.window_left
         sy = self.y
         self.image.rotate_draw(math.radians(self.rotation), sx, sy,40,40)
-        x1, y1, x2, y2 = self.get_bb()
-        draw_rectangle(x1 - server.background.window_left, y1 ,
-                       x2 - server.background.window_left, y2)
+
 
     def update(self):  #
         self.rotation += 1
@@ -53,6 +53,7 @@ class Ball:
 
         self.y = clamp(GROUND, self.y, CEILING)
         if self.y <= GROUND:
+            self.bounce_sound.play()
             self.y_velocity = abs(self.y_velocity)
             self.bounce_rate += 1
         elif self.y >= CEILING // self.bounce_rate:
@@ -69,6 +70,7 @@ class Ball:
 
     def handle_collision(self, group, other):
         if group == 'boy:ball':
+            self.bounce_sound.play()
             if other.x  <= self.x:
                 self.launch_angle = random.randint(10, 80)
             elif other.x > self.x:
