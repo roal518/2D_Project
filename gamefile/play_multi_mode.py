@@ -8,6 +8,7 @@ from field import *
 from player_1p import *
 from ball import Ball
 from player_2p import *
+import title_mode
 # boy = None
 
 def handle_events():
@@ -16,7 +17,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.change_mode(title_mode)
         else:
             boy1.handle_event(event)
             boy2.handle_event(event)
@@ -36,11 +37,13 @@ def handle_events():
                 boy2.bet_P = 1
 
 def init():
-    global grass
     global boy1,boy2
     global S_P1,S_P2
     global S_Players
     running = True
+
+    server.background = Grass()
+    game_world.add_object(server.background, 0)
     S_P1 = Player_2P(1,1200)
     game_world.add_object(S_P1, 1)
     S_P2 = Player_2P(-1,1100)
@@ -52,33 +55,26 @@ def init():
     game_world.add_object(boy2, 1)
 
     # fill here
-    global balls
-    balls = Ball(800,300,4)
-    game_world.add_object(balls, 1)
+    server.balls = Ball(800,300,4)
+    game_world.add_object(server.balls, 1)
 
     game_world.add_collision_pair('boy.ball', boy1, None)
-    game_world.add_collision_pair('boy:ball', boy1, balls)
+    game_world.add_collision_pair('boy:ball', boy1, server.balls)
     game_world.add_collision_pair('boy.ball', boy2, None)
-    game_world.add_collision_pair('boy:ball', boy2, balls)
+    game_world.add_collision_pair('boy:ball', boy2, server.balls)
     game_world.add_collision_pair('boy.ball', S_P1, None)
-    game_world.add_collision_pair('boy:ball', S_P1, balls)
+    game_world.add_collision_pair('boy:ball', S_P1, server.balls)
     game_world.add_collision_pair('boy.ball', S_P2, None)
-    game_world.add_collision_pair('boy:ball', S_P2, balls)
+    game_world.add_collision_pair('boy:ball', S_P2, server.balls)
 
     global goalpost_A
     goalpost_A = GoalPost(20,120,0)
     game_world.add_object(goalpost_A,1)
-    game_world.add_collision_pair('ball:post_a',balls,goalpost_A)
+    game_world.add_collision_pair('ball:post_a',server.balls,goalpost_A)
     global goalpost_B
     goalpost_B = GoalPost(1580,120,1)
     game_world.add_object(goalpost_B,1)
-    game_world.add_collision_pair('ball:post_b',balls,goalpost_B)
-
-    grass = Grass()
-    game_world.add_object(grass, 0)
-
-
-
+    game_world.add_collision_pair('ball:post_b',server.balls,goalpost_B)
 
 def finish():
     game_world.clear()

@@ -16,7 +16,7 @@ FLOOR = 90
 
 # Boy Run Speed
 PIXEL_PER_METER = (20.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 30.0  # Km / Hour
+RUN_SPEED_KMPH = 35.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -75,21 +75,21 @@ class Ai:
     def set_target_location(self,x=None,y=None):
         if not x or not y:
             raise ValueError('Location should be given')
-        self.tx, self.ty = play_single_mode.server.balls.x, play_single_mode.server.balls.y
+        self.tx, self.ty = play_single_mode.server.balls.x + 5, play_single_mode.server.balls.y
         return BehaviorTree.SUCCESS
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty -self.y , tx-self.x)
         self.speed = RUN_SPEED_PPS
         self.x += self.speed * math.cos(self.dir) * game_framework.frame_time
         if self.job == 1:
-            self.x = clamp(900,self.x,1600)
-            if self.x < 910:
+            self.x = clamp(1000,self.x,1600)
+            if self.x < 1010:
                 self.state = 0
             else:
                 self.state = 1
         elif self.job == 0:
-            self.x = clamp(90,self.x,1200)
-            if self.x > 1190:
+            self.x = clamp(90,self.x,1150)
+            if self.x > 1140:
                 self.state = 0
             else:
                 self.state = 1

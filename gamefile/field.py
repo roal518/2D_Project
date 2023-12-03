@@ -2,6 +2,7 @@ import time
 from pico2d import *
 import game_framework
 import server
+import title_mode
 class CountdownTimer:
     def __init__(self, minutes, seconds):
         self.duration = minutes * 60 + seconds
@@ -26,8 +27,8 @@ class Grass:
     def __init__(self):
         self.image = load_image('pngfile//background.png')
         self.font = load_font('ENCR10B.TTF', 32)
-        self.min = 1
-        self.sec = 30
+        self.min = 0
+        self.sec = 2
         self.timer = CountdownTimer(minutes= self.min,seconds=self.sec)
         self.timer.start()
         self.cw = get_canvas_width()
@@ -36,7 +37,7 @@ class Grass:
         self.h = 600
     def draw(self):
         self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
-        self.font.draw(480, 550, f'{self.min:01d}', (255, 255, 255))
+        self.font.draw(480, 550, f'{self.min:01d}'":", (255, 255, 255))
         self.font.draw(520, 550, f'{self.sec:01d}', (255, 255, 255))
     def update(self):
         print(self.timer.time_left())
@@ -45,16 +46,18 @@ class Grass:
         self.min = int(self.timer.time_left() // 60)
         self.sec = int(self.timer.time_left() % 60)
         if self.min == 0 and self.sec == 0:
-            game_framework.quit()
-
+            if server.goalpost_A.point_1p > server.goalpost_A.point_2p:
+               server.goalpost_A.check = 1
+            elif server.goalpost_A.point_1p < server.goalpost_A.point_2p:
+                server.goalpost_B.check = 2
 class GoalPost:
     def __init__(self, x, y,state):
         self.image = load_image('pngfile//goalpost.png')
         self.x = x
         self.y = 100
         self.point_1p = 0
-        self.point_2p = 0
-
+        self.point_2p = 11
+        self.check = 0
         self.state = state
         self.font = load_font('ENCR10B.TTF', 32)
     def draw(self):
@@ -64,7 +67,11 @@ class GoalPost:
         if self.state == 1:
             self.image.composite_draw(0,'h',self.x - server.background.window_left,self.y,100,140)
             self.font.draw(400, 500, f'{self.point_1p:01d}', (255, 255, 255))
-            draw_rectangle(*self.get_bb())
+        if self.check == 1:
+            self.font.draw(450, 300, "Win 1P", (255, 255, 255))
+        if self.check == 2:
+            self.font.draw(450, 300, "Win 2P", (255, 255, 255))
+
     def get_bb(self):
         return self.x - 30, self.y - 80, self.x+25,self.y+500
     def handle_collision(self,group,other):
@@ -79,7 +86,7 @@ class GoalPost:
             else:
                 other.x_velocity *=-1
         if group == 'ball:post_b':
-            if other.y <= 160:
+            if other.y <= 140:
                 other.x = 1100
                 other.y = 300
                 other.bounce_rate = 1
@@ -89,7 +96,7 @@ class GoalPost:
             else:
                 other.x_velocity *=-1
     def update(self):
-        if self.point_1p - self.point_2p == 10:
-            game_framework.quit()
-        elif self.point_2p - self.point_1p == 10:
-            game_framework.quit()
+        if self.point_1p == 10:
+            self.check = 1
+        elif self.point_2p == 10:
+            self.check = 2

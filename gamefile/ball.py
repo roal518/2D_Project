@@ -30,7 +30,7 @@ class Ball:
     def draw(self):
         sx = self.x - server.background.window_left
         sy = self.y
-        self.image.rotate_draw(math.radians(self.rotation), sx, sy)
+        self.image.rotate_draw(math.radians(self.rotation), sx, sy,40,40)
         x1, y1, x2, y2 = self.get_bb()
         draw_rectangle(x1 - server.background.window_left, y1 ,
                        x2 - server.background.window_left, y2)
@@ -69,9 +69,9 @@ class Ball:
 
     def handle_collision(self, group, other):
         if group == 'boy:ball':
-            if other.x - server.background.window_left <= self.x:
+            if other.x  <= self.x:
                 self.launch_angle = random.randint(10, 80)
-            elif other.x - server.background.window_left > self.x:
+            elif other.x > self.x:
                 self.launch_angle = random.randint(100, 170)
             self.bounce_rate = 1
             self.y_velocity = random.randint(6, 8)

@@ -1,5 +1,5 @@
 import time
-
+import game_world
 
 def change_mode(mode):
     global stack
@@ -36,6 +36,7 @@ def pop_mode():
 def quit():
     global running
     running = False
+
 
 
 def run(start_mode):
