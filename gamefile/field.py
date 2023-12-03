@@ -2,6 +2,8 @@ import time
 from pico2d import *
 import game_framework
 import server
+import end_1P
+import end_2P
 import title_mode
 class CountdownTimer:
     def __init__(self, minutes, seconds):
@@ -27,8 +29,8 @@ class Grass:
     def __init__(self):
         self.image = load_image('pngfile//background.png')
         self.font = load_font('ENCR10B.TTF', 32)
-        self.min = 0
-        self.sec = 2
+        self.min = 1
+        self.sec = 30
         self.timer = CountdownTimer(minutes= self.min,seconds=self.sec)
         self.timer.start()
         self.cw = get_canvas_width()
@@ -50,13 +52,14 @@ class Grass:
                server.goalpost_A.check = 1
             elif server.goalpost_A.point_1p < server.goalpost_A.point_2p:
                 server.goalpost_B.check = 2
+
 class GoalPost:
     def __init__(self, x, y,state):
         self.image = load_image('pngfile//goalpost.png')
         self.x = x
         self.y = 100
         self.point_1p = 0
-        self.point_2p = 11
+        self.point_2p = 0
         self.check = 0
         self.state = state
         self.font = load_font('ENCR10B.TTF', 32)
@@ -69,8 +72,10 @@ class GoalPost:
             self.font.draw(400, 500, f'{self.point_1p:01d}', (255, 255, 255))
         if self.check == 1:
             self.font.draw(450, 300, "Win 1P", (255, 255, 255))
+            game_framework.change_mode(end_1P)
         if self.check == 2:
             self.font.draw(450, 300, "Win 2P", (255, 255, 255))
+            game_framework.change_mode(end_2P)
 
     def get_bb(self):
         return self.x - 30, self.y - 80, self.x+25,self.y+500
@@ -96,7 +101,7 @@ class GoalPost:
             else:
                 other.x_velocity *=-1
     def update(self):
-        if self.point_1p == 10:
+        if self.point_1p >= 10:
             self.check = 1
-        elif self.point_2p == 10:
+        elif self.point_2p >= 10:
             self.check = 2
